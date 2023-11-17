@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <style>
+        #tablaEquipos {
+            display: none;
+        }
+    </style>
+    <style>
+        #tablaSedes {
+            display: none;
+        }
+    </style>
+    <title>Lista</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+<body>
+<main>
+    <div class="container px-4 py-5">
+        <h1 class="pb-2 border-bottom" id="tituloListaEquipos">Lista</h1>
+
+        <div class="d-flex justify-content-between mt-3 mb-4">
+            <a class="btn btn-primary" id="btnApertura" href="#">Lista Trabajadores</a>
+            <a class="btn btn-primary" id="btnClausura" href="#">Lista Sedes</a>
+        </div>
+
+
+        <table class="table" id="tablaEquipos">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Ver Detalles</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+
+        <table class="table" id="tablaSedes">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Direccion</th>
+                <th>Ver Detalles</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    $(document).ready(function() {
+        function mostrarTablaEquipo() {
+            $("#tablaEquipos").show();
+        }
+
+        function ocultarTablaEquipo() {
+            $("#tablaEquipos").hide();
+        }
+
+        function mostrarTablaSede() {
+            $("#tablaSedes").show();
+        }
+
+        function ocultarTablaSede() {
+            $("#tablaSedes").hide();
+        }
+
+        function mostrarEquipos(listaEquipos, titulo) {
+            $("#tablaEquipos tbody").empty();
+            $("#tituloListaEquipos").text(titulo);
+
+            $.each(listaEquipos, function(index, trabajadores) {
+                var fila = "<tr>";
+                fila += "<td>" + (index + 1) + "</td>";
+                fila += "<td>" + trabajadores.nombre + "</td>";
+                fila += "<td>" + trabajadores.apellido + "</td>";
+                fila += "<td>" + trabajadores.correo + "</td>";
+                fila += "<td><a class='btn btn-warning' href='/detalleTrabajadores" + trabajadores.dni + "'>Detalle</a></td>";
+                fila += "</tr>";
+
+                $("#tablaEquipos tbody").append(fila);
+            });
+
+            mostrarTablaEquipo();
+        }
+
+        ocultarTablaEquipo();
+
+        function mostrarSedes(listaEquipos, titulo) {
+            $("#tablaSedes tbody").empty();
+            $("#tituloListaEquipos").text(titulo);
+
+            $.each(listaEquipos, function(index, sedes) {
+                var fila = "<tr>";
+                fila += "<td>" + (index + 1) + "</td>";
+                fila += "<td>" + sedes.nombreSede + "</td>";
+                fila += "<td>" + sedes.direccion + "</td>";
+                fila += "<td><a class='btn btn-warning' href='/detalleSedes" + sedes.idsede + "'>Detalle</a></td>";
+                fila += "</tr>";
+
+                $("#tablaSedes tbody").append(fila);
+            });
+
+            mostrarTablaSede();
+        }
+
+        ocultarTablaSede();
+
+        $("#btnApertura").click(function() {
+            $.ajax({
+                url: 'http://localhost:3000/trabajadores',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    const equiposFiltrados = data.filter(equipo => equipo.dni != undefined);
+
+                    mostrarEquipos(equiposFiltrados, 'Lista trabajadores');
+                },
+                error: function (error) {
+                    console.log('Error al obtener los datos:', error);
+                }
+            });
+        });
+
+        $("#btnClausura").click(function() {
+            // Realizar la solicitud AJAX
+            $.ajax({
+                url: 'http://localhost:3000/sedes',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    const equiposFiltrados = data.filter(equipo => equipo.idsede != undefined);
+
+                    mostrarSedes(equiposFiltrados, 'Lista Sedes');
+                },
+                error: function (error) {
+                    console.log('Error al obtener los datos:', error);
+                }
+            });
+        });
+    });
+</script>
+<script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
